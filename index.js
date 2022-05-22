@@ -44,11 +44,9 @@ async function run () {
 } 
 run().catch(console.dir);
 
-
-
 // home route
 app.get("/", (req, res) => {
-  res.send("Assignment 12 - Menufacturer website is running fine");
+  res.send(" Menufacturer website is running fine");
 });
 
 app.listen(port, () => {
