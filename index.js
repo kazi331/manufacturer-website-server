@@ -18,6 +18,14 @@ async function run () {
     const productCollection = client.db("products").collection("product"); 
     const orderCollection = client.db("orders").collection("order"); 
     
+// create new order 
+app.post('/neworder', async(req, res) => {
+  // const order = req.body;
+  console.log(req.body);
+  // const result = await orderCollection.insertOne(order);
+  // res.send(result);
+})
+
     // get all products 
     app.get('/products', async(req, res) => {
       const result = await productCollection.find({}).toArray();
@@ -32,13 +40,9 @@ async function run () {
       res.send(result);
     })
 
-    // create new order 
-    // app.post('/new-order', async(req, res) => {
-    //   const order = req.body;
-    //   console.log(order);
-    //   const result = await orderCollection.insertOne(order);
-    //   res.send(result);
-    // })
+// create new order 
+
+    
   } 
   finally{}
 } 
