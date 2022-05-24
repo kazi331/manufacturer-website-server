@@ -18,6 +18,7 @@ async function run () {
     await client.connect();
     const productCollection = client.db("products").collection("product"); 
     const orderCollection = client.db("orders").collection("order"); 
+    const reviewCollection = client.db("reviews").collection("review"); 
     
 
     // get all products 
@@ -61,6 +62,26 @@ async function run () {
         const result = await orderCollection.deleteOne(filter)
         res.send(result);
       })
+
+      // create new review 
+      app.post('/review', async(req, res) => {
+        const review = req.body;
+        const result = await reviewCollection.insertOne(review);
+        res.send(result);
+      })
+      // getting  review 
+      app.get('/review', async(req, res) => {
+        const result = await reviewCollection.find().toArray();
+        res.send(result);
+      })
+
+       // delete single review 
+       app.delete('/review/:id', async(req, res) => {
+        const id = req.params.id; 
+        const filter = {_id: ObjectId(id)}
+        const result = await reviewCollection.deleteOne(filter);
+        res.send(result);
+       })
 
   } 
   finally{}
