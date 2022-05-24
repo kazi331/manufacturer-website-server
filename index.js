@@ -34,7 +34,7 @@ async function run () {
     })
 
     // create new order 
-    app.post('/new-order', async(req, res) => {
+    app.post('/neworder', async(req, res) => {
       const order = req.body;
       const result = await orderCollection.insertOne(order);
       res.send(result);
