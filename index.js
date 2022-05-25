@@ -19,6 +19,7 @@ async function run () {
     const productCollection = client.db("products").collection("product"); 
     const orderCollection = client.db("orders").collection("order"); 
     const reviewCollection = client.db("reviews").collection("review"); 
+    const userCollection = client.db("users").collection("user"); 
     
 
     // get all products 
@@ -82,6 +83,17 @@ async function run () {
         const result = await reviewCollection.deleteOne(filter);
         res.send(result);
        })
+
+      //  manage users
+      app.put('user/:emai', async(req, res) => {
+        const email = req.params.email;
+        const user = req.body;
+        const filter = {email: email}
+        const options = {upsert: true}
+        const updateDoc = { $set: user }
+        const resutl = await userCollection.updateOne(filter, updateDoc ,options)
+        res.send(result);
+      })
 
   } 
   finally{}
