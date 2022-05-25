@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
@@ -45,7 +46,6 @@ async function run () {
       // get single order with email 
       app.get('/my-orders/:email', async(req, res) => {
         const email = req.params.email;
-        console.log(req.params.email);
         const result = await orderCollection.find({email}).toArray();
         res.send(result);
       })
@@ -58,7 +58,6 @@ async function run () {
       // delete single order 
       app.delete('/order/:id', async(req, res) => {
         const id = req.params.id;
-        console.log(id);
         const filter = {_id: ObjectId(id)}
         const result = await orderCollection.deleteOne(filter)
         res.send(result);
@@ -85,15 +84,32 @@ async function run () {
        })
 
       //  manage users
-      app.put('user/:emai', async(req, res) => {
+      app.put('/users/:email', async(req, res) => {
         const email = req.params.email;
         const user = req.body;
+        console.log(email, user);
         const filter = {email: email}
-        const options = {upsert: true}
-        const updateDoc = { $set: user }
-        const resutl = await userCollection.updateOne(filter, updateDoc ,options)
+        const options = { upsert: true };
+        const updateDoc =  {$set: user,};
+        const result = await userCollection.updateOne(filter, updateDoc, options)
+        const token = jwt.sign({email:email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+        res.send({result, token});
+      })
+
+
+      // find users 
+      app.get('/users', async(req, res) => {
+        const result = await userCollection.find().toArray();
         res.send(result);
       })
+      // delete user 
+      app.delete('/user/:id', async(req, res) => {
+        const id = req.params.id;
+        const filter = {_id: ObjectId(id)}
+        const result = await userCollection.deleteOne(filter);
+        res.send(result);
+      })
+
 
   } 
   finally{}
