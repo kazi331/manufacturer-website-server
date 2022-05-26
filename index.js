@@ -15,13 +15,13 @@ function verifyJWT(req, res, next) {
   const authorize = req.headers.authorization;
   if (!authorize) {
    return res.status(401).send({ Message: "UnAuthorized Access!!" });
-
   }
   const token = authorize.split(" ")[1]; // console.log(token);
   // verify a token symmetric
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
     if (err) {
-      res.status(403).send({ Message: "Access Forbidden" });
+      console.log(err);
+     return res.status(403).send({ Message: "Access Forbidden" });
     }
     // console.log(decoded); // bar
     req.decoded = decoded;
@@ -66,7 +66,7 @@ async function run() {
     });
 
     // get single order with email
-    app.get("/my-orders/:email", verifyJWT, async (req, res) => {
+    app.get("/my-orders/:email", async (req, res) => {
       const email = req.params.email;
         const result = await orderCollection.find({ email }).toArray();
         return res.send(result);
@@ -105,7 +105,7 @@ async function run() {
       res.send(result);
     });
 
-    //  manage users
+    // add users to database/  manage users
     app.put("/users/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
@@ -121,8 +121,39 @@ async function run() {
       res.send({ result, token });  
     });
 
-    // find all users
-    app.get("/users",verifyJWT, async (req, res) => {
+    // update user info 
+    app.put('/update/:email', async(req, res) => {
+      const email = req.params.email;
+      const updateInfo = req.body;
+      console.log(email, updateInfo)
+      const filter = {email: email}
+      // const body = await userCollection.findOne(filter);
+      const options = {upsert : true}
+      const update = {$set: updateInfo }
+      const result = await userCollection.updateOne(filter, update, options)
+      res.send(result);
+    })
+
+
+    // get user info 
+    app.get('/user/:email', async(req, res)=> {
+      const email = req.params.email;
+      const result = await userCollection.findOne({email: email})
+      res.send(result);
+    })
+
+    // make users admin 
+    app.put("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log(req.params);
+      const filter = { email: email };
+      const updateDoc = { $set: {role: 'admin'} };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send (result);  
+    });
+
+    // find all users 
+    app.get("/users", verifyJWT, async (req, res) => { // gets error when try to use verifyjwt
       const result = await userCollection.find().toArray();
       res.send(result);
     });
