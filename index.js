@@ -153,7 +153,7 @@ async function run() {
     });
 
     // find all users 
-    app.get("/users", verifyJWT, async (req, res) => { // gets error when try to use verifyjwt
+    app.get("/users", async (req, res) => { // gets error when try to use verifyjwt
       const result = await userCollection.find().toArray();
       res.send(result);
     });
