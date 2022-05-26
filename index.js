@@ -50,14 +50,21 @@ async function run() {
       const result = await productCollection.find().toArray();
       res.send(result);
     });
-    // get id specific product
+    // get id specific product (single)
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await productCollection.findOne(query);
       res.send(result);
     });
-
+    // ADD NEW PRODUCT
+    app.post('/product', async(req, res) => {
+      const product = req.body;
+      const result = await productCollection.insertOne(product);
+      res.send(result);
+    })
+   
+      
     // create new order
     app.post("/neworder", async (req, res) => {
       const order = req.body;
@@ -116,7 +123,7 @@ async function run() {
       const token = jwt.sign(
         { email: email },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "1d" }
       );
       res.send({ result, token });  
     });
@@ -127,7 +134,6 @@ async function run() {
       const updateInfo = req.body;
       console.log(email, updateInfo)
       const filter = {email: email}
-      // const body = await userCollection.findOne(filter);
       const options = {upsert : true}
       const update = {$set: updateInfo }
       const result = await userCollection.updateOne(filter, update, options)
@@ -164,6 +170,13 @@ async function run() {
       const result = await userCollection.deleteOne(filter);
       res.send(result);
     });
+
+    
+    
+
+
+
+
   } finally {
   }
 }
