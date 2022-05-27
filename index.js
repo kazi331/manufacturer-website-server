@@ -36,7 +36,7 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-// console.log(uri);
+1
 async function run() {
   try {
     await client.connect();
@@ -48,7 +48,8 @@ async function run() {
     // get all products
     app.get("/products", async (req, res) => {
       const result = await productCollection.find().toArray();
-      res.send(result);
+
+      res.send(result.reverse());
     });
     // get id specific product (single)
     app.get("/product/:id", async (req, res) => {
@@ -60,10 +61,17 @@ async function run() {
     // ADD NEW PRODUCT
     app.post('/product', async(req, res) => {
       const product = req.body;
+      console.log(req.body);
       const result = await productCollection.insertOne(product);
       res.send(result);
     })
-   
+    
+    // Delete Product 
+    app.delete('/product/:id', async(req, res) => {
+      const id = req.params.id;
+      const result = await productCollection.deleteOne({_id: ObjectId(id)});
+      res.send(result);
+    })
       
     // create new order
     app.post("/neworder", async (req, res) => {
